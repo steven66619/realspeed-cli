@@ -1,0 +1,31 @@
+#!/usr/bin/make -f
+
+# Build realspeed-cli with Go into the package staging dir.
+PREFIX = /usr
+
+clean:
+	rm -f realspeed-cli
+
+build:
+	# No go.mod in this project: build the single-file module directly.
+	go build -ldflags="-s -w" -o realspeed-cli main.go
+
+install: build
+	install -Dm755 realspeed-cli $(CURDIR)/debian/realspeed-cli/usr/bin/realspeed-cli
+
+# Substitute the host architecture for the binary stanza's `any` so the
+# resulting .deb is installable (dpkg rejects `Architecture: any` on binaries).
+ARCH := $(shell dpkg-architecture -qDEB_HOST_ARCH)
+
+binary-arch: install
+	mkdir -p $(CURDIR)/debian/realspeed-cli/DEBIAN
+	awk '/^Package:/ {p=1} p' debian/control \
+	    | sed 's/^Architecture: any$$/Architecture: $(ARCH)/' \
+	    > $(CURDIR)/debian/realspeed-cli/DEBIAN/control
+	sed -n 's/.*(\(.*\)).*/\1/p' debian/changelog | head -1 | \
+	    xargs -I{} echo "Version: {}" >> $(CURDIR)/debian/realspeed-cli/DEBIAN/control
+	dpkg-deb --root-owner-group --build $(CURDIR)/debian/realspeed-cli $(CURDIR)/..
+
+binary: binary-arch
+
+.PHONY: clean build install binary-arch binary

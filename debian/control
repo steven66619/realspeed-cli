@@ -1,0 +1,18 @@
+Source: realspeed-cli
+Section: net
+Priority: optional
+Maintainer: Steven Atkinson <steven4x4@gmail.com>
+Build-Depends: debhelper-compat (= 13), golang-go
+Standards-Version: 4.6.2
+Homepage: https://github.com/steven66619/realspeed-cli
+
+Package: realspeed-cli
+Architecture: any
+Maintainer: Steven Atkinson <steven4x4@gmail.com>
+Section: net
+Priority: optional
+Homepage: https://github.com/steven66619/realspeed-cli
+Description: Command-line internet speed test using SamKnows infrastructure
+ Unofficial speed test CLI using the SamKnows infrastructure that Virgin
+ Media uses for RealSpeed. Tests both router (hub) and device speeds from
+ the terminal.
